@@ -1,8 +1,10 @@
 ---
 title: "Practical Machine Learning"
 author: "2160032_Park_Manjun"
-date: "2017≥‚ 3ø˘ 22¿œ"
-output: html_document
+date: "2017<eb>ÖÑ 3<ec>õî 22<ec>ùº"
+output:
+  word_document: default
+  html_document: default
 ---
 
 
@@ -105,37 +107,29 @@ We fit a predictive model for activity recognition using **Random Forest** algor
 
 ```{r}
 controlRf <- trainControl(method="cv", 5)
-modelRf <- train(classe ~ ., data=trainData, method="rf", trControl=controlRf, ntree=250)
-modelRf
+modelRf <- train(classe ~ ., data=trainData, method="rf", trControl=controlRf, ntree=250, na.action = na.omit)
 ```
 
+## RESULT
 ```{r}
-## Random Forest
-##
-## 13737 samples
-##    52 predictor
-##     5 classes: 'A', 'B', 'C', 'D', 'E'
-##
-## No pre-processing
-## Resampling: Cross-Validated (5 fold)
-##
-## Summary of sample sizes: 10989, 10989, 10991, 10990, 10989
-##
-## Resampling results across tuning parameters:
-##
-##   mtry  Accuracy   Kappa      Accuracy SD   Kappa SD    
-##    2    0.9904636  0.9879361  0.0006534224  0.0008263772
-##   27    0.9913374  0.9890405  0.0015731292  0.0019917940
-##   52    0.9850766  0.9811193  0.0027732182  0.0035098533
-##
-## Accuracy was used to select the optimal model using  the largest value.
-## The final value used for the model was mtry = 27.
+modelRf
 ```
 Then, we estimate the performance of the model on the validation data set.  
 
+
+```{r}
+modelRf
+dim(testData)
+predictRf <- predict(modelRf, testData)
+predictRf
+```
+
 ```{r}
 predictRf <- predict(modelRf, testData)
-confusionMatrix(testData$classe, predictRf)
+length(predictRf)
+dim(testData)
+
+##confusionMatrix(testData$classe, predictRf)
 ```
 
 ```{r}
@@ -177,19 +171,12 @@ accuracy <- postResample(predictRf, testData$classe)
 accuracy
 ```
 
-```{r}
-##  Accuracy     Kappa
-## 0.9930331 0.9911870
-```
 
 ```{r}
 oose <- 1 - as.numeric(confusionMatrix(testData$classe, predictRf)$overall[1])
 oose
 ```
 
-```{r}
-## [1] 0.006966865
-```
 So, the estimated accuracy of the model is 99.30% and the estimated out-of-sample error is 0.70%.
 
 ## Predicting for Test Data Set
@@ -200,10 +187,7 @@ result <- predict(modelRf, testCleaned[, -length(names(testCleaned))])
 result
 ```
 
-```{r}
-##  [1] B A B A A E D B A A B C B A E E A B B B
-## Levels: A B C D E
-```
+
 
 ## Appendix: Figures
 1. Correlation Matrix Visualization  
@@ -220,5 +204,4 @@ corrplot(corrPlot, method="color")
 treeModel <- rpart(classe ~ ., data=trainData, method="class")
 prp(treeModel) # fast plot
 ```
-
 
